@@ -1,0 +1,10 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+  ],
+  "settings": {
+    "kickassembler.emulator.runtime": "C:\\vice\\bin\\x128.exe"
+  }
+}

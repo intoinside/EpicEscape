@@ -1,0 +1,110 @@
+
+plugins {
+    id "com.github.c64lib.retro-assembler" version "1.7.6"
+}
+
+repositories {
+    mavenCentral()
+}
+
+apply plugin: "com.github.c64lib.retro-assembler"
+
+retroProject {
+    dialect = "KickAssembler"
+    dialectVersion = "5.25"
+    libDirs = [".ra/deps/c128lib", ".."]
+    srcDirs = ["."]
+    excludes = ["**/_*.asm", ".ra/**/*", "libs/*"]
+
+    // dependencies
+    libFromGitHub "c128lib/common", "0.6.0"
+    // libFromGitHub "c128lib/chipset", "0.3.0"
+}
+
+preprocess {
+    // Game charset, colors and maps
+    // charpad {
+    //     getInput().set(file("./maps/game-maps.ctm"))
+    //     getUseBuildDir().set(false)
+    //     outputs {
+    //         charset {
+    //             output = file("./maps/charset.bin")
+    //         }
+    //         charsetAttributes {
+    //             nybbler {
+    //                 loOutput = file("./maps/charcolors.bin")
+    //             }
+    //         }
+
+    // // Intro map
+    //         map {
+    //             left = 0
+    //             top = 0
+    //             right = 40
+    //             bottom = 22
+    //             interleaver {
+    //                 output = file("maps/intro.bin")
+    //             }
+    //             interleaver {
+    //             }
+    //         }
+
+    // // Levels maps
+    //         map {
+    //             left = 40
+    //             top = 0
+    //             right = 80
+    //             bottom = 22
+    //             interleaver {
+    //                 output = file("maps/level1.bin")
+    //             }
+    //             interleaver {
+    //             }
+    //         }
+    //         map {
+    //             left = 80
+    //             top = 0
+    //             right = 120
+    //             bottom = 22
+    //             interleaver {
+    //                 output = file("maps/level2.bin")
+    //             }
+    //             interleaver {
+    //             }
+    //         }
+    //         map {
+    //             left = 120
+    //             top = 0
+    //             right = 160
+    //             bottom = 22
+    //             interleaver {
+    //                 output = file("maps/level3.bin")
+    //             }
+    //             interleaver {
+    //             }
+    //         }
+    //         map {
+    //             left = 160
+    //             top = 0
+    //             right = 180
+    //             bottom = 7
+    //             interleaver {
+    //                 output = file("maps/dialognextlevel.bin")
+    //             }
+    //             interleaver {
+    //             }
+    //         }
+    //         map {
+    //             left = 160
+    //             top = 7
+    //             right = 180
+    //             bottom = 14
+    //             interleaver {
+    //                 output = file("maps/dialoggameover.bin")
+    //             }
+    //             interleaver {
+    //             }
+    //         }
+    //     }
+    // }
+}
