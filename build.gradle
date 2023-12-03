@@ -18,7 +18,7 @@ retroProject {
 
     // dependencies
     libFromGitHub "c128lib/common", "0.6.0"
-    // libFromGitHub "c128lib/chipset", "0.3.0"
+    libFromGitHub "c128lib/chipset", "0.7.1"
 }
 
 preprocess {
@@ -35,6 +35,18 @@ preprocess {
     //                 loOutput = file("./maps/charcolors.bin")
     //             }
     //         }
+    charpad {
+        getInput().set(file("./maps/game-maps.ctm"))
+        getUseBuildDir().set(false)
+        outputs {
+            charset {
+                output = file("./maps/charset.bin")
+            }
+            charsetAttributes {
+                nybbler {
+                    loOutput = file("./maps/charcolors.bin")
+                }
+            }
 
     // // Intro map
     //         map {
@@ -61,6 +73,18 @@ preprocess {
     //             interleaver {
     //             }
     //         }
+    // Levels maps
+            map {
+                left = 0
+                top = 0
+                right = 40
+                bottom = 25
+                interleaver {
+                    output = file("maps/level1.bin")
+                }
+                interleaver {
+                }
+            }
     //         map {
     //             left = 80
     //             top = 0
@@ -105,6 +129,6 @@ preprocess {
     //             interleaver {
     //             }
     //         }
-    //     }
-    // }
+        }
+    }
 }

@@ -21,14 +21,18 @@ c128lib_BasicUpstart128($1c10)
 * = $1c10 "Entry"
 Entry: {
 
-    lda #0
-    sta $d020
-    sta $d021
+    c128lib_SetBorderAndBackgroundColor(BLACK, BLACK)
 
-    jsr 27440
+    c128lib_SetMMULoadConfiguration(c128lib.Mmu.RAM0 | c128lib.Mmu.IO_ROM | c128lib.Mmu.ROM_LOW_RAM | c128lib.Mmu.ROM_MID_RAM | c128lib.Mmu.ROM_HI_RAM)
+
+    c128lib_SetVICBank(c128lib.Cia.BANK_1)
+    c128lib_SetScreenAndCharacterMemory(c128lib.Vic2.CHAR_MEM_3800 | c128lib.Vic2.SCREEN_MEM_0400)
 
     rts
 }
 
 #import "_allimport.asm"
 #import "./common/lib/common-global.asm"
+#import "./chipset/lib/vic2-global.asm"
+
+#import "_allimport.asm"
