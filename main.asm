@@ -12,7 +12,7 @@
   [name="--- RAFFAELE ---", type="rel"],
   [name="--- INTORCIA ---", type="rel"],
   [name="----------------", type="rel"],
-  [name="EPICESCAPE", type="prg", segments="Code, MapData", modify="BasicUpstart", _start=$1c10],
+  [name="EPIC-ESCAPE", type="prg", segments="Code, MapData", modify="BasicUpstart", _start=$1c10],
   [name="----------------", type="rel"]
 }
 
@@ -20,19 +20,150 @@ c128lib_BasicUpstart128($1c10)
 
 * = $1c10 "Entry"
 Entry: {
+    c128lib_SetBorderAndBackgroundColor(BLACK, DARK_GREY)
+    c128lib_SetBackgroundForegroundColor(c128lib.Vdc.VDC_DARK_BLUE, c128lib.Vdc.VDC_LIGHT_BLUE)
 
-    c128lib_SetBorderAndBackgroundColor(BLACK, BLACK)
+    // c128lib_FillScreen(32)
+
+    // c128lib_WriteToVdcMemoryByCoordinates(source, 5, 5, 11)
 
     c128lib_SetMMULoadConfiguration(c128lib.Mmu.RAM0 | c128lib.Mmu.IO_ROM | c128lib.Mmu.ROM_LOW_RAM | c128lib.Mmu.ROM_MID_RAM | c128lib.Mmu.ROM_HI_RAM)
 
     c128lib_SetVICBank(c128lib.Cia.BANK_1)
     c128lib_SetScreenAndCharacterMemory(c128lib.Vic2.CHAR_MEM_3800 | c128lib.Vic2.SCREEN_MEM_0400)
 
+    SetColorForMap(Level1)
+
+    // Sprite multicolor mode
+    lda #%00000010
+    sta c128lib.Vic2.SPRITE_COL_MODE
+    
+    lda #WHITE
+    sta c128lib.Vic2.SPRITE_0_COLOR
+    lda #BLACK
+    sta c128lib.Vic2.SPRITE_1_COLOR
+
+    lda #LIGHT_RED
+    sta c128lib.Vic2.SPRITE_COL_0
+    lda #LIGHT_GREY
+    sta c128lib.Vic2.SPRITE_COL_1
+
+    lda #58
+    sta c128lib.Vic2.SHADOW_SPRITE_0_X
+    sta c128lib.Vic2.SHADOW_SPRITE_1_X
+    lda #50
+    sta c128lib.Vic2.SHADOW_SPRITE_0_Y
+    sta c128lib.Vic2.SHADOW_SPRITE_1_Y
+
+    lda #SPRITES.PLAYER_STAND_LAYER0
+    sta SPRITES.SPRITES_0
+    lda #SPRITES.PLAYER_STAND_LAYER1
+    sta SPRITES.SPRITES_1
+ 
+    lda #$ff
+    sta c128lib.Vic2.SPRITE_ENABLE
+
+  Loop:
+    jsr WaitRoutine
+    // If player is moving, keep joystick movement
+    lda IsMoving
+    bne !+
+
+    // If player is not moving, get new joystick movement
+    jsr GetJoystickMove
+  !:
+    lda Direction
+    beq CheckVerticalMove
+    cmp #$1
+    beq MoveRight
+    cmp #$ff
+    beq MoveLeft
+    jmp CheckVerticalMove
+
+  MoveRight:
+    lda IsMoving
+    bne !+
+    // Player should move right, but it's still, setup new IsMoving
+    lda #MoveOffset
+    sta IsMoving
+  !:
+    dec IsMoving
+    inc c128lib.Vic2.SHADOW_SPRITE_0_X
+    inc c128lib.Vic2.SHADOW_SPRITE_1_X
+    jmp CheckVerticalMove
+
+  MoveLeft:
+    lda IsMoving
+    bne !+
+    // Player should move left, but it's still, setup new IsMoving
+    lda #MoveOffset
+    sta IsMoving
+  !:
+    dec IsMoving
+    dec c128lib.Vic2.SHADOW_SPRITE_0_X
+    dec c128lib.Vic2.SHADOW_SPRITE_1_X
+
+  CheckVerticalMove:
+    lda DirectionY
+    beq Loop
+    cmp #$1
+    beq MoveDown
+    cmp #$ff
+    beq MoveUp
+    jmp Loop
+
+  MoveDown:
+    lda IsMoving
+    bne !+
+    // Player should move down, but it's still, setup new IsMoving
+    lda #MoveOffset
+    sta IsMoving
+  !:
+    dec IsMoving
+    inc c128lib.Vic2.SHADOW_SPRITE_0_Y
+    inc c128lib.Vic2.SHADOW_SPRITE_1_Y
+    jmp Loop
+
+  MoveUp:
+    lda IsMoving
+    bne !+
+    // Player should move up, but it's still, setup new IsMoving
+    lda #MoveOffset
+    sta IsMoving
+  !:
+    dec IsMoving
+    dec c128lib.Vic2.SHADOW_SPRITE_0_Y
+    dec c128lib.Vic2.SHADOW_SPRITE_1_Y
+
+    jmp Loop
+
+    rts
+
+    IsMoving: .byte 0
+
+    .label MoveOffset = 8
+}
+
+WaitRoutine: {
+  VBLANKWAITLOW:
+    lda c128lib.Vic2.CONTROL_1
+    bpl VBLANKWAITLOW
+  VBLANKWAITHIGH:
+    lda c128lib.Vic2.CONTROL_1
+    bmi VBLANKWAITHIGH
     rts
 }
 
-#import "_allimport.asm"
-#import "./common/lib/common-global.asm"
-#import "./chipset/lib/vic2-global.asm"
+source: .text "epic escape"
 
+#define VDC_FILLSCREEN
+#import "./common/lib/common-global.asm"
+#import "./chipset/lib/mmu-global.asm"
+#import "./chipset/lib/cia-global.asm"
+#import "./chipset/lib/vic2-global.asm"
+#import "./chipset/lib/vdc-global.asm"
+
+#import "_sprites.asm"
+#import "_utils.asm"
+#import "_joystick.asm"
 #import "_allimport.asm"
