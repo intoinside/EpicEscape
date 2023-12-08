@@ -55,12 +55,12 @@ Entry: {
     sta c128lib.Vic2.SHADOW_SPRITE_0_Y
     sta c128lib.Vic2.SHADOW_SPRITE_1_Y
 
-    lda #SPRITES.PLAYER_STAND_LAYER0
+    lda #SPRITES.PLAYER_STAND_L0
     sta SPRITES.SPRITES_0
-    lda #SPRITES.PLAYER_STAND_LAYER1
+    lda #SPRITES.PLAYER_STAND_L1_RIGHT
     sta SPRITES.SPRITES_1
  
-    lda #$ff
+    lda #%11
     sta c128lib.Vic2.SPRITE_ENABLE
 
   Loop:
@@ -72,8 +72,17 @@ Entry: {
     // If player is not moving, get new joystick movement
     jsr GetJoystickMove
   !:
+    HandlePlayerMovement(IsMoving)
+
+    jmp Loop
+
+    rts
+
+    IsMoving: .byte 0
+}
+
+.macro HandlePlayerMovement(IsMoving) {
     lda Direction
-    beq CheckVerticalMove
     cmp #$1
     beq MoveRight
     cmp #$ff
@@ -105,12 +114,11 @@ Entry: {
 
   CheckVerticalMove:
     lda DirectionY
-    beq Loop
     cmp #$1
     beq MoveDown
     cmp #$ff
     beq MoveUp
-    jmp Loop
+    jmp NoMove
 
   MoveDown:
     lda IsMoving
@@ -134,12 +142,30 @@ Entry: {
     dec IsMoving
     dec c128lib.Vic2.SHADOW_SPRITE_0_Y
     dec c128lib.Vic2.SHADOW_SPRITE_1_Y
-
     jmp Loop
 
-    rts
+  NoMove:
+    lda Orientation
+    cmp #1
+    beq RightOrientation
+    cmp #$ff
+    beq LeftOrientation
+    jmp Loop
+  RightOrientation:
+    lda #SPRITES.PLAYER_STAND_L0
+    sta SPRITES.SPRITES_0
+    lda #SPRITES.PLAYER_STAND_L1_RIGHT
+    sta SPRITES.SPRITES_1
+    jmp Loop
 
-    IsMoving: .byte 0
+  LeftOrientation:
+    lda #SPRITES.PLAYER_STAND_L0
+    sta SPRITES.SPRITES_0
+    lda #SPRITES.PLAYER_STAND_L1_LEFT
+    sta SPRITES.SPRITES_1
+    jmp Loop
+
+  Loop:
 
     .label MoveOffset = 8
 }
