@@ -22,19 +22,6 @@ retroProject {
 }
 
 preprocess {
-    // Game charset, colors and maps
-    // charpad {
-    //     getInput().set(file("./maps/game-maps.ctm"))
-    //     getUseBuildDir().set(false)
-    //     outputs {
-    //         charset {
-    //             output = file("./maps/charset.bin")
-    //         }
-    //         charsetAttributes {
-    //             nybbler {
-    //                 loOutput = file("./maps/charcolors.bin")
-    //             }
-    //         }
     charpad {
         getInput().set(file("./maps/game-maps.ctm"))
         getUseBuildDir().set(false)
@@ -61,18 +48,6 @@ preprocess {
     //             }
     //         }
 
-    // // Levels maps
-    //         map {
-    //             left = 40
-    //             top = 0
-    //             right = 80
-    //             bottom = 22
-    //             interleaver {
-    //                 output = file("maps/level1.bin")
-    //             }
-    //             interleaver {
-    //             }
-    //         }
     // Levels maps
             map {
                 left = 0
@@ -85,50 +60,6 @@ preprocess {
                 interleaver {
                 }
             }
-    //         map {
-    //             left = 80
-    //             top = 0
-    //             right = 120
-    //             bottom = 22
-    //             interleaver {
-    //                 output = file("maps/level2.bin")
-    //             }
-    //             interleaver {
-    //             }
-    //         }
-    //         map {
-    //             left = 120
-    //             top = 0
-    //             right = 160
-    //             bottom = 22
-    //             interleaver {
-    //                 output = file("maps/level3.bin")
-    //             }
-    //             interleaver {
-    //             }
-    //         }
-    //         map {
-    //             left = 160
-    //             top = 0
-    //             right = 180
-    //             bottom = 7
-    //             interleaver {
-    //                 output = file("maps/dialognextlevel.bin")
-    //             }
-    //             interleaver {
-    //             }
-    //         }
-    //         map {
-    //             left = 160
-    //             top = 7
-    //             right = 180
-    //             bottom = 14
-    //             interleaver {
-    //                 output = file("maps/dialoggameover.bin")
-    //             }
-    //             interleaver {
-    //             }
-    //         }
         }
     }
 }
