@@ -37,7 +37,7 @@ Entry: {
     // Sprite multicolor mode
     lda #%00000010
     sta c128lib.Vic2.SPRITE_COL_MODE
-    
+
     lda #WHITE
     sta c128lib.Vic2.SPRITE_0_COLOR
     lda #BLACK
@@ -48,10 +48,10 @@ Entry: {
     lda #LIGHT_GREY
     sta c128lib.Vic2.SPRITE_COL_1
 
-    lda #58
+    lda #PlayerStartingX
     sta c128lib.Vic2.SHADOW_SPRITE_0_X
     sta c128lib.Vic2.SHADOW_SPRITE_1_X
-    lda #50
+    lda #PlayerStartingY
     sta c128lib.Vic2.SHADOW_SPRITE_0_Y
     sta c128lib.Vic2.SHADOW_SPRITE_1_Y
 
@@ -59,7 +59,7 @@ Entry: {
     sta SPRITES.SPRITES_0
     lda #SPRITES.PLAYER_STAND_L1_RIGHT
     sta SPRITES.SPRITES_1
- 
+
     lda #%11
     sta c128lib.Vic2.SPRITE_ENABLE
 
@@ -81,6 +81,14 @@ Entry: {
     IsMoving: .byte 0
 }
 
+.label PlayerLimitLeftX = 31
+.label PlayerLimitRightX = 254
+.label PlayerLimitUpY = 55
+.label PlayerLimitDownY = 230
+
+.label PlayerStartingX = 62
+.label PlayerStartingY = 54
+
 .macro HandlePlayerMovement(IsMoving) {
     lda Direction
     cmp #$1
@@ -89,7 +97,13 @@ Entry: {
     beq MoveLeft
     jmp CheckVerticalMove
 
+  LoopFar:
+    jmp Loop
+
   MoveRight:
+    lda c128lib.Vic2.SHADOW_SPRITE_0_X
+    cmp #PlayerLimitRightX
+    bcs LoopFar
     lda IsMoving
     bne !+
     // Player should move right, but it's still, setup new IsMoving
@@ -102,6 +116,9 @@ Entry: {
     jmp CheckVerticalMove
 
   MoveLeft:
+    lda c128lib.Vic2.SHADOW_SPRITE_0_X
+    cmp #PlayerLimitLeftX
+    bcc LoopFar
     lda IsMoving
     bne !+
     // Player should move left, but it's still, setup new IsMoving
@@ -121,6 +138,9 @@ Entry: {
     jmp NoMove
 
   MoveDown:
+    lda c128lib.Vic2.SHADOW_SPRITE_0_Y
+    cmp #PlayerLimitDownY
+    bcs Loop
     lda IsMoving
     bne !+
     // Player should move down, but it's still, setup new IsMoving
@@ -133,6 +153,9 @@ Entry: {
     jmp Loop
 
   MoveUp:
+    lda c128lib.Vic2.SHADOW_SPRITE_0_Y
+    cmp #PlayerLimitUpY
+    bcc Loop
     lda IsMoving
     bne !+
     // Player should move up, but it's still, setup new IsMoving
