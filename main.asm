@@ -27,10 +27,34 @@ Entry: {
 
     // c128lib_WriteToVdcMemoryByCoordinates(source, 5, 5, 11)
 
+    // c128lib_SetScreenAndCharacterMemory(c128lib.Vic2.CHAR_MEM_3800 | c128lib.Vic2.SCREEN_MEM_0400)
+
+    lda #$ff
+    sta c128lib.Vic2.SCREEN_EDITOR_IRQ_FLAG
+
+    lda $01
+    and #%11111000
+    ora #%00000100
+    sta $01
+
     c128lib_SetMMULoadConfiguration(c128lib.Mmu.RAM0 | c128lib.Mmu.IO_ROM | c128lib.Mmu.ROM_LOW_RAM | c128lib.Mmu.ROM_MID_RAM | c128lib.Mmu.ROM_HI_RAM)
 
     c128lib_SetVICBank(c128lib.Cia.BANK_1)
-    c128lib_SetScreenAndCharacterMemory(c128lib.Vic2.CHAR_MEM_3800 | c128lib.Vic2.SCREEN_MEM_0400)
+
+    // Setup charmem/charpos
+    // c128lib_SetScreenAndCharacterMemory(c128lib.Vic2.CHAR_MEM_3800 | c128lib.Vic2.SCREEN_MEM_0400)
+    // sta $d016
+
+    lda c128lib.Vic2.CONTROL_2
+    ora #c128lib.Vic2.CONTROL_2_MCM
+    sta c128lib.Vic2.CONTROL_2
+
+    lda #DARK_GRAY
+    sta c128lib.Vic2.BG_COL_0
+    lda #ORANGE
+    sta c128lib.Vic2.BG_COL_1
+    lda #LIGHT_RED
+    sta c128lib.Vic2.BG_COL_2
 
     SetColorForMap(Level1)
 

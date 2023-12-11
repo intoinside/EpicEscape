@@ -12,7 +12,7 @@ Level1:
 Sprites:
   .import binary "./sprites/sprites.bin"
 
-* = $7800 "Charset"
+* = $5000 "Charset"
 Charset:
   .import binary "./maps/charset.bin"
 
