@@ -32,6 +32,7 @@ Entry: {
     lda #$ff
     sta c128lib.Vic2.SCREEN_EDITOR_IRQ_FLAG
 
+    // Vic and Cpu see bank 0, Vic sees ram instead of rom
     lda $01
     and #%11111000
     ora #%00000100
@@ -45,6 +46,7 @@ Entry: {
     // c128lib_SetScreenAndCharacterMemory(c128lib.Vic2.CHAR_MEM_3800 | c128lib.Vic2.SCREEN_MEM_0400)
     // sta $d016
 
+    // Set multicolor mode
     lda c128lib.Vic2.CONTROL_2
     ora #c128lib.Vic2.CONTROL_2_MCM
     sta c128lib.Vic2.CONTROL_2
@@ -131,10 +133,33 @@ Entry: {
     lda IsMoving
     bne !+
     // Player should move right, but it's still, setup new IsMoving
-    lda #MoveOffset
+    lda #MoveOffset + 1
     sta IsMoving
+    ldx #SPRITES.PLAYER_WALKDOWN_STEP1_L0
+    stx SPRITES.SPRITES_0
+    ldx #SPRITES.PLAYER_WALKDOWN_STEP1_L1_RIGHT
+    stx SPRITES.SPRITES_1
+
   !:
+    lsr
+    bcc !Move+
+
+    cpx #SPRITES.PLAYER_WALKDOWN_STEP1_L1_RIGHT
+    beq !Switch+
+    lda #SPRITES.PLAYER_WALKDOWN_STEP1_L0
+    ldx #SPRITES.PLAYER_WALKDOWN_STEP1_L1_RIGHT
+    jmp !+
+  !Switch:
+    lda #SPRITES.PLAYER_WALKDOWN_STEP2_L0
+    ldx #SPRITES.PLAYER_WALKDOWN_STEP2_L1_RIGHT
+  !:
+    sta SPRITES.SPRITES_0
+    stx SPRITES.SPRITES_1
+  !Move:
     dec IsMoving
+    bne !+
+
+  !:
     inc c128lib.Vic2.SHADOW_SPRITE_0_X
     inc c128lib.Vic2.SHADOW_SPRITE_1_X
     jmp CheckVerticalMove
@@ -146,10 +171,31 @@ Entry: {
     lda IsMoving
     bne !+
     // Player should move left, but it's still, setup new IsMoving
-    lda #MoveOffset
+    lda #MoveOffset + 1
     sta IsMoving
+    ldx #SPRITES.PLAYER_WALKDOWN_STEP1_L0
+    stx SPRITES.SPRITES_0
+    ldx #SPRITES.PLAYER_WALKDOWN_STEP1_L1_LEFT
+    stx SPRITES.SPRITES_1
+
   !:
+    lsr
+    bcc !Move+
+
+    cpx #SPRITES.PLAYER_WALKDOWN_STEP1_L1_LEFT
+    beq !Switch+
+    lda #SPRITES.PLAYER_WALKDOWN_STEP1_L0
+    ldx #SPRITES.PLAYER_WALKDOWN_STEP1_L1_LEFT
+    jmp !+
+  !Switch:
+    lda #SPRITES.PLAYER_WALKDOWN_STEP2_L0
+    ldx #SPRITES.PLAYER_WALKDOWN_STEP2_L1_LEFT
+  !:
+    sta SPRITES.SPRITES_0
+    stx SPRITES.SPRITES_1
+  !Move:
     dec IsMoving
+
     dec c128lib.Vic2.SHADOW_SPRITE_0_X
     dec c128lib.Vic2.SHADOW_SPRITE_1_X
 
@@ -214,7 +260,7 @@ Entry: {
 
   Loop:
 
-    .label MoveOffset = 8
+    .label MoveOffset = 4
 }
 
 WaitRoutine: {
